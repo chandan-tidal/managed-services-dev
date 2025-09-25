@@ -15,6 +15,112 @@ if (!customElements.get('product-form')) {
         if (document.querySelector('cart-drawer')) this.submitButton.setAttribute('aria-haspopup', 'dialog');
 
         this.hideErrors = this.dataset.hideErrors === 'true';
+        // Get section ID
+        const sectionId = this.dataset.section || this.closest('product-info').dataset.section;
+        // Get full product JSON from script
+        this.product = JSON.parse(document.getElementById(`ProductJSON-${sectionId}`)?.textContent || '{}');
+        this.variants = this.product.variants || [];
+        console.log('Product JSON:', this.product); // Debug
+        console.log('Variants:', this.variants); // Debug
+        // Add change listener for variant selection
+        this.form.addEventListener('change', this.onVariantChange.bind(this));
+        // Initial filter call
+        this.filterMedia();
+      }
+
+      onVariantChange(event) {
+        // Manually update variant ID if needed
+        const variantInput = event.target.closest('[name="option1"], [name="Color"], [name="option2"], [name="option3"]');
+        if (variantInput) {
+          const variantValue = variantInput.value;
+          const variant = this.variants.find(v => v.option1 === variantValue || v.option2 === variantValue || v.option3 === variantValue);
+          if (variant) {
+            console.log('Manually setting variant ID:', variant.id);
+            this.variantIdInput.value = variant.id;
+          }
+        }
+        this.filterMedia();
+      }
+
+      filterMedia() {
+        // Get section ID
+        const sectionId = this.dataset.section || this.closest('product-info').dataset.section;
+        // Get current variant ID from hidden input
+        const currentVariantId = this.variantIdInput.value;
+        console.log('Current Variant ID:', currentVariantId); // Debug
+        // Find current variant
+        const currentVariant = this.variants.find(v => v.id.toString() === currentVariantId.toString());
+        console.log('Current Variant:', currentVariant); // Debug
+        // Try option1, then option2, then option3 for color
+        const selectedColor = currentVariant
+          ? (currentVariant.option1 || currentVariant.option2 || currentVariant.option3 || '')
+          : '';
+        console.log('Selected Color:', selectedColor); // Debug
+        if (!selectedColor) {
+          console.warn('No color selected - check variant ID, option1, option2, or option3');
+          return;
+        }
+
+        // Hide all media and thumbnails
+        const allItems = document.querySelectorAll('[data-color]');
+        allItems.forEach(item => {
+          item.style.display = 'none';
+        });
+
+        // Show matching
+        const matchingItems = document.querySelectorAll(`[data-color="${selectedColor}"]`);
+        matchingItems.forEach(item => {
+          item.style.display = 'block';
+        });
+
+        console.log('Matching items:', matchingItems.length); // Debug
+        console.log('Matching item IDs:', Array.from(matchingItems).map(el => el.id)); // Debug
+
+        // Reset sliders after DOM update
+        setTimeout(() => {
+          // Main slider reset
+          const mainSlider = document.getElementById(`GalleryViewer-${sectionId}`);
+          if (mainSlider) {
+            console.log('Resetting main slider...');
+            mainSlider.resetPages(); // Recalculates visible items
+            mainSlider.slider.scrollTo({ left: 0 }); // Scroll to first
+            const slides = mainSlider.querySelectorAll('.slider__slide');
+            slides.forEach(el => el.classList.remove('is-active'));
+            const firstVisible = Array.from(slides).find(el => el.style.display !== 'none' && el.clientWidth > 0);
+            if (firstVisible) {
+              firstVisible.classList.add('is-active');
+              console.log('First visible slide:', firstVisible.id);
+            } else {
+              console.warn('No visible slides after filter');
+            }
+            mainSlider.update();
+          } else {
+            console.error('Main slider not found');
+          }
+
+          // Thumbnail slider reset
+          const thumbSlider = document.getElementById(`GalleryThumbnails-${sectionId}`);
+          if (thumbSlider) {
+            console.log('Resetting thumbnail slider...');
+            thumbSlider.resetPages(); // Recalculates visible thumbs
+            thumbSlider.slider.scrollTo({ left: 0 });
+            const thumbLinks = thumbSlider.querySelectorAll('.thumbnail');
+            thumbLinks.forEach(el => el.removeAttribute('aria-current'));
+            const firstThumb = Array.from(thumbLinks).find(el => el.closest('.thumbnail-list__item').style.display !== 'none' && el.closest('.thumbnail-list__item').clientWidth > 0);
+            if (firstThumb) {
+              firstThumb.setAttribute('aria-current', 'true');
+              console.log('First visible thumb:', firstThumb.parentElement.id);
+            } else {
+              console.warn('No visible thumbs after filter');
+            }
+            thumbSlider.update();
+          } else {
+            console.error('Thumbnail slider not found');
+          }
+
+          window.dispatchEvent(new Event('resize'));
+          console.log('Slider reset complete');
+        }, 500); // Increased delay
       }
 
       onSubmitHandler(evt) {
