@@ -102,6 +102,233 @@
     ]
   },
   {
+    "name": "t:settings_schema.quick_view.name",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "quick_view_enabled",
+        "label": "t:settings_schema.quick_view.settings.enabled.label",
+        "default": false,
+        "info": "t:settings_schema.quick_view.settings.enabled.info"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_button_placement",
+        "label": "t:settings_schema.quick_view.settings.button_placement.label",
+        "options": [
+          {
+            "value": "top-left",
+            "label": "t:settings_schema.quick_view.settings.button_placement.options.top_left"
+          },
+          {
+            "value": "top-right",
+            "label": "t:settings_schema.quick_view.settings.button_placement.options.top_right"
+          },
+          {
+            "value": "bottom-left",
+            "label": "t:settings_schema.quick_view.settings.button_placement.options.bottom_left"
+          },
+          {
+            "value": "bottom-right",
+            "label": "t:settings_schema.quick_view.settings.button_placement.options.bottom_right"
+          },
+          {
+            "value": "center",
+            "label": "t:settings_schema.quick_view.settings.button_placement.options.center"
+          }
+        ],
+        "default": "bottom-right",
+        "info": "t:settings_schema.quick_view.settings.button_placement.info",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.quick_view.settings.typography.header",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_button_font_size",
+        "label": "t:settings_schema.quick_view.settings.typography.font_size.label",
+        "options": [
+          {
+            "value": "12",
+            "label": "12px"
+          },
+          {
+            "value": "14",
+            "label": "14px"
+          },
+          {
+            "value": "16",
+            "label": "16px"
+          },
+          {
+            "value": "18",
+            "label": "18px"
+          },
+          {
+            "value": "20",
+            "label": "20px"
+          }
+        ],
+        "default": "14",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_button_font_weight",
+        "label": "t:settings_schema.quick_view.settings.typography.font_weight.label",
+        "options": [
+          {
+            "value": "400",
+            "label": "t:settings_schema.quick_view.settings.typography.font_weight.options.regular"
+          },
+          {
+            "value": "500",
+            "label": "t:settings_schema.quick_view.settings.typography.font_weight.options.medium"
+          },
+          {
+            "value": "600",
+            "label": "t:settings_schema.quick_view.settings.typography.font_weight.options.semibold"
+          },
+          {
+            "value": "700",
+            "label": "t:settings_schema.quick_view.settings.typography.font_weight.options.bold"
+          }
+        ],
+        "default": "400",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_button_text_case",
+        "label": "t:settings_schema.quick_view.settings.typography.text_case.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:settings_schema.quick_view.settings.typography.text_case.options.default"
+          },
+          {
+            "value": "uppercase",
+            "label": "t:settings_schema.quick_view.settings.typography.text_case.options.uppercase"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.quick_view.settings.popup_element_order.header",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_image_position",
+        "label": "t:settings_schema.quick_view.settings.popup_element_order.image_position.label",
+        "options": [
+          {
+            "value": "1",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.first"
+          },
+          {
+            "value": "2",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.second"
+          },
+          {
+            "value": "3",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.third"
+          },
+          {
+            "value": "4",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.fourth"
+          }
+        ],
+        "default": "1",
+        "info": "t:settings_schema.quick_view.settings.popup_element_order.image_position.info",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_price_position",
+        "label": "t:settings_schema.quick_view.settings.popup_element_order.price_position.label",
+        "options": [
+          {
+            "value": "1",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.first"
+          },
+          {
+            "value": "2",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.second"
+          },
+          {
+            "value": "3",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.third"
+          },
+          {
+            "value": "4",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.fourth"
+          }
+        ],
+        "default": "2",
+        "info": "t:settings_schema.quick_view.settings.popup_element_order.price_position.info",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_variant_picker_position",
+        "label": "t:settings_schema.quick_view.settings.popup_element_order.variant_picker_position.label",
+        "options": [
+          {
+            "value": "1",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.first"
+          },
+          {
+            "value": "2",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.second"
+          },
+          {
+            "value": "3",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.third"
+          },
+          {
+            "value": "4",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.fourth"
+          }
+        ],
+        "default": "3",
+        "info": "t:settings_schema.quick_view.settings.popup_element_order.variant_picker_position.info",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      },
+      {
+        "type": "select",
+        "id": "quick_view_buy_buttons_position",
+        "label": "t:settings_schema.quick_view.settings.popup_element_order.buy_buttons_position.label",
+        "options": [
+          {
+            "value": "1",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.first"
+          },
+          {
+            "value": "2",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.second"
+          },
+          {
+            "value": "3",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.third"
+          },
+          {
+            "value": "4",
+            "label": "t:settings_schema.quick_view.settings.popup_element_order.options.fourth"
+          }
+        ],
+        "default": "4",
+        "info": "t:settings_schema.quick_view.settings.popup_element_order.buy_buttons_position.info",
+        "visible_if": "{{ settings.quick_view_enabled == true }}"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.typography.name",
     "settings": [
       {

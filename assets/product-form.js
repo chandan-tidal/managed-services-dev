@@ -6,6 +6,7 @@ if (!customElements.get('product-form')) {
         super();
 
         this.form = this.querySelector('form');
+        this.sectionId = this.dataset.sectionId || this.closest('product-info')?.dataset.section || this.closest('quick-add-modal')?.dataset.sectionId;
         this.variantIdInput.disabled = false;
         this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
         this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
@@ -15,36 +16,38 @@ if (!customElements.get('product-form')) {
         if (document.querySelector('cart-drawer')) this.submitButton.setAttribute('aria-haspopup', 'dialog');
 
         this.hideErrors = this.dataset.hideErrors === 'true';
-        // Get section ID
-        const sectionId = this.dataset.section || this.closest('product-info').dataset.section;
         // Get full product JSON from script
-        this.product = JSON.parse(document.getElementById(`ProductJSON-${sectionId}`)?.textContent || '{}');
+        this.product = JSON.parse(document.getElementById(`ProductJSON-${this.sectionId}`)?.textContent || '{}');
         this.variants = this.product.variants || [];
         console.log('Product JSON:', this.product); // Debug
         console.log('Variants:', this.variants); // Debug
         // Add change listener for variant selection
         this.form.addEventListener('change', this.onVariantChange.bind(this));
-        // Initial filter call
+        // Initial filter call and button state update
+        const initialVariant = this.variants.find(v => v.id.toString() === this.variantIdInput.value);
+        this.toggleSubmitButton(!initialVariant?.available, initialVariant?.available ? window.variantStrings.addToCart : window.variantStrings.soldOut);
         this.filterMedia();
       }
 
       onVariantChange(event) {
-        // Manually update variant ID if needed
-        const variantInput = event.target.closest('[name="option1"], [name="Color"], [name="option2"], [name="option3"]');
-        if (variantInput) {
-          const variantValue = variantInput.value;
-          const variant = this.variants.find(v => v.option1 === variantValue || v.option2 === variantValue || v.option3 === variantValue);
-          if (variant) {
-            console.log('Manually setting variant ID:', variant.id);
-            this.variantIdInput.value = variant.id;
-          }
+        // Get selected options
+        const variantInputs = this.form.querySelectorAll('[name^="options["]');
+        const selectedOptions = Array.from(variantInputs).map(input => input.value);
+        
+        // Find matching variant
+        const variant = this.variants.find(v => {
+          return selectedOptions.every((value, index) => v[`option${index + 1}`] === value);
+        });
+
+        if (variant) {
+          console.log('Manually setting variant ID:', variant.id);
+          this.variantIdInput.value = variant.id;
+          this.toggleSubmitButton(!variant.available, variant.available ? window.variantStrings.addToCart : window.variantStrings.soldOut);
+          this.filterMedia();
         }
-        this.filterMedia();
       }
 
       filterMedia() {
-        // Get section ID
-        const sectionId = this.dataset.section || this.closest('product-info').dataset.section;
         // Get current variant ID from hidden input
         const currentVariantId = this.variantIdInput.value;
         console.log('Current Variant ID:', currentVariantId); // Debug
@@ -61,14 +64,16 @@ if (!customElements.get('product-form')) {
           return;
         }
 
-        // Hide all media and thumbnails
-        const allItems = document.querySelectorAll('[data-color]');
+        // Scope media to Quick View popup if present
+        const isQuickAdd = this.closest('quick-add-modal');
+        const selectorPrefix = isQuickAdd ? `#QuickAddInfo-${this.product.id} ` : '';
+        const allItems = document.querySelectorAll(`${selectorPrefix}[data-color]`);
         allItems.forEach(item => {
           item.style.display = 'none';
         });
 
-        // Show matching
-        const matchingItems = document.querySelectorAll(`[data-color="${selectedColor}"]`);
+        // Show matching media
+        const matchingItems = document.querySelectorAll(`${selectorPrefix}[data-color="${selectedColor}"]`);
         matchingItems.forEach(item => {
           item.style.display = 'block';
         });
@@ -79,7 +84,7 @@ if (!customElements.get('product-form')) {
         // Reset sliders after DOM update
         setTimeout(() => {
           // Main slider reset
-          const mainSlider = document.getElementById(`GalleryViewer-${sectionId}`);
+          const mainSlider = document.getElementById(`Slider-Gallery-${this.sectionId}`);
           if (mainSlider) {
             console.log('Resetting main slider...');
             mainSlider.resetPages(); // Recalculates visible items
@@ -99,7 +104,7 @@ if (!customElements.get('product-form')) {
           }
 
           // Thumbnail slider reset
-          const thumbSlider = document.getElementById(`GalleryThumbnails-${sectionId}`);
+          const thumbSlider = document.getElementById(`GalleryThumbnails-${this.sectionId}`);
           if (thumbSlider) {
             console.log('Resetting thumbnail slider...');
             thumbSlider.resetPages(); // Recalculates visible thumbs
@@ -120,7 +125,7 @@ if (!customElements.get('product-form')) {
 
           window.dispatchEvent(new Event('resize'));
           console.log('Slider reset complete');
-        }, 500); // Increased delay
+        }, 500); // Retain original delay
       }
 
       onSubmitHandler(evt) {

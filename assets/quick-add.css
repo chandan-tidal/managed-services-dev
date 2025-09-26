@@ -1,6 +1,5 @@
 .quick-add {
   position: relative;
-  grid-row-start: 4;
   margin: 0 0 1rem;
   z-index: 1;
 }
@@ -213,6 +212,7 @@
   --modal-padding: 2.5rem;
   padding-right: 4.4rem;
   display: flex;
+  flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
   padding: var(--modal-padding);
@@ -228,6 +228,21 @@
 
 .quick-add-modal__content-info > product-info {
   padding: 0;
+}
+
+.quick-add__variant-picker {
+  margin-bottom: 1rem;
+}
+
+.quick-add__variant-picker .variant-option {
+  margin-bottom: 0.5rem;
+}
+
+.quick-add__variant-picker .variant-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-radius: 4px;
 }
 
 @media screen and (max-width: 749px) {
