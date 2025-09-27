@@ -139,6 +139,9 @@
                     <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
                     {{ form | payment_terms }}
                   {%- endform -%}
+                  <script id="ProductJSON-{{ section.id }}" type="application/json">
+                    {{ product | json }}
+                  </script>
                 </div>
               {%- when 'inventory' -%}
                 <p

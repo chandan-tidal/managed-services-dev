@@ -26,24 +26,57 @@ if (!customElements.get('product-form')) {
         // Initial filter call and button state update
         const initialVariant = this.variants.find(v => v.id.toString() === this.variantIdInput.value);
         this.toggleSubmitButton(!initialVariant?.available, initialVariant?.available ? window.variantStrings.addToCart : window.variantStrings.soldOut);
-        this.filterMedia();
+        // this.filterMedia();
       }
 
       onVariantChange(event) {
-        // Get selected options
-        const variantInputs = this.form.querySelectorAll('[name^="options["]');
-        const selectedOptions = Array.from(variantInputs).map(input => input.value);
+        // // Get selected options
+        // const variantInputs = this.form.querySelectorAll('[name^="options["]');
+        // const selectedOptions = Array.from(variantInputs).map(input => input.value);
         
-        // Find matching variant
-        const variant = this.variants.find(v => {
-          return selectedOptions.every((value, index) => v[`option${index + 1}`] === value);
-        });
+        // // Find matching variant
+        // const variant = this.variants.find(v => {
+        //   return selectedOptions.every((value, index) => v[`option${index + 1}`] === value);
+        // });
 
-        if (variant) {
-          console.log('Manually setting variant ID:', variant.id);
-          this.variantIdInput.value = variant.id;
-          this.toggleSubmitButton(!variant.available, variant.available ? window.variantStrings.addToCart : window.variantStrings.soldOut);
-          this.filterMedia();
+        // if (variant) {
+        //   console.log('Manually setting variant ID:', variant.id);
+        //   this.variantIdInput.value = variant.id;
+        //   this.toggleSubmitButton(!variant.available, variant.available ? window.variantStrings.addToCart : window.variantStrings.soldOut);
+        //   this.filterMedia();
+        // }
+        this.filterVariantImage();
+      }
+
+      filterVariantImage(){
+        const currentVariant = this.getCurrentVariant();
+        console.log('Variant data: ', currentVariant);
+        console.log('LOOP OUT: ', currentVariant?.featured_image);
+        if (currentVariant?.featured_image && currentVariant?.featured_image.alt) {
+          console.log('IN-IF');
+          // show only the thumbnails for the selected color
+          // [thumbnail-alt = 'red']
+          document.querySelectorAll('[thumbnail-alt]').forEach(img => img.style.display = 'none')
+          const currentImgAlt = currentVariant.featured_image.alt
+          const thumbnailSelector = `[thumbnail-alt = '${currentImgAlt}']`
+          document.querySelectorAll(thumbnailSelector).forEach(img => img.style.display = 'block')
+        } else {
+          console.log('IN-ELSE');
+          // show all thumbnails
+          document.querySelectorAll('[thumbnail-alt]').forEach(img => img.style.display = 'block')
+        }
+      }
+
+      getCurrentVariant() {
+        // First, check URL for variant ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const variantIdFromUrl = urlParams.get('variant');
+        if (variantIdFromUrl) {
+          const variant = this.variants.find(v => v.id.toString() === variantIdFromUrl.toString());
+          if (variant) {
+            console.log('Variant found from URL variant ID:', variant);
+            return variant;
+          }
         }
       }
 
