@@ -19,8 +19,6 @@ if (!customElements.get('product-form')) {
         // Get full product JSON from script
         this.product = JSON.parse(document.getElementById(`ProductJSON-${this.sectionId}`)?.textContent || '{}');
         this.variants = this.product.variants || [];
-        console.log('Product JSON:', this.product); // Debug
-        console.log('Variants:', this.variants); // Debug
         // Add change listener for variant selection
         this.form.addEventListener('change', this.onVariantChange.bind(this));
         // Initial filter call and button state update
@@ -30,30 +28,12 @@ if (!customElements.get('product-form')) {
       }
 
       onVariantChange(event) {
-        // // Get selected options
-        // const variantInputs = this.form.querySelectorAll('[name^="options["]');
-        // const selectedOptions = Array.from(variantInputs).map(input => input.value);
-        
-        // // Find matching variant
-        // const variant = this.variants.find(v => {
-        //   return selectedOptions.every((value, index) => v[`option${index + 1}`] === value);
-        // });
-
-        // if (variant) {
-        //   console.log('Manually setting variant ID:', variant.id);
-        //   this.variantIdInput.value = variant.id;
-        //   this.toggleSubmitButton(!variant.available, variant.available ? window.variantStrings.addToCart : window.variantStrings.soldOut);
-        //   this.filterMedia();
-        // }
         this.filterVariantImage();
       }
 
       filterVariantImage(){
         const currentVariant = this.getCurrentVariant();
-        console.log('Variant data: ', currentVariant);
-        console.log('LOOP OUT: ', currentVariant?.featured_image);
         if (currentVariant?.featured_image && currentVariant?.featured_image.alt) {
-          console.log('IN-IF');
           // show only the thumbnails for the selected color
           // [thumbnail-alt = 'red']
           document.querySelectorAll('[thumbnail-alt]').forEach(img => img.style.display = 'none')
@@ -61,7 +41,6 @@ if (!customElements.get('product-form')) {
           const thumbnailSelector = `[thumbnail-alt = '${currentImgAlt}']`
           document.querySelectorAll(thumbnailSelector).forEach(img => img.style.display = 'block')
         } else {
-          console.log('IN-ELSE');
           // show all thumbnails
           document.querySelectorAll('[thumbnail-alt]').forEach(img => img.style.display = 'block')
         }
@@ -74,7 +53,6 @@ if (!customElements.get('product-form')) {
         if (variantIdFromUrl) {
           const variant = this.variants.find(v => v.id.toString() === variantIdFromUrl.toString());
           if (variant) {
-            console.log('Variant found from URL variant ID:', variant);
             return variant;
           }
         }
